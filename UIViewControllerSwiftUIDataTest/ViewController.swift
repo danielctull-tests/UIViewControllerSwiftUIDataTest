@@ -34,14 +34,18 @@ private struct PathButton: View {
     }
 }
 
+private final class ViewState: ObservableObject {
+    @Published var isPressed = false {
+        didSet { print("isPressed", isPressed) }
+    }
+}
+
 final class ViewController: UIViewController {
 
     @IBOutlet private var top: UIView!
     @IBOutlet private var bottom: UIView!
 
-    private var isPressed = false {
-        didSet { print("isPressed", isPressed) }
-    }
+    @ObservedObject private var state = ViewState()
 
     private var topHost: UIViewController = UIViewController() {
         willSet { remove(topHost) }
@@ -55,11 +59,8 @@ final class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        let binding = Binding(
-            get: { self.isPressed },
-            set: { self.isPressed = $0 })
-        topHost = UIHostingController(rootView: Control(isPressed: binding))
-        bottomHost = UIHostingController(rootView: Control(isPressed: binding))
+        topHost = UIHostingController(rootView: Control(isPressed: $state.isPressed))
+        bottomHost = UIHostingController(rootView: Control(isPressed: $state.isPressed))
     }
 }
 
