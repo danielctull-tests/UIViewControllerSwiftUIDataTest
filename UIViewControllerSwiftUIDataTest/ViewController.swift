@@ -1,4 +1,5 @@
 
+import Combine
 import SwiftUI
 import UIKit
 
@@ -17,19 +18,9 @@ struct Control: View {
 
     var body: some View {
         GeometryReader { proxy in
-            PathButton(path: Circle().path(in: proxy.frame(in: .local)), isActive: isPressed)
+            path(for: proxy.size)
+                .fill(isPressed ? Color.red : .yellow)
                 .gesture(touch(for: proxy.size))
-        }
-    }
-}
-
-private struct PathButton: View {
-    let path: Path
-    let isActive: Bool
-    var body: some View {
-        ZStack {
-            path.fill(isActive ? Color.red : .white)
-            path.stroke(Color.gray)
         }
     }
 }
