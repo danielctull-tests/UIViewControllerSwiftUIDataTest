@@ -3,7 +3,7 @@ import SwiftUI
 import UIKit
 
 struct Control: View {
-    @Binding var pressed: Bool
+    @Binding var isPressed: Bool
 
     private func path(for size: CGSize) -> Path {
         Circle().path(in: CGRect(origin: .zero, size: size))
@@ -11,13 +11,13 @@ struct Control: View {
 
     private func touch(for size: CGSize) -> some Gesture {
         DragGesture(minimumDistance: 0)
-            .onChanged { pressed = path(for: size).contains($0.location) }
-            .onEnded { _ in pressed = false }
+            .onChanged { isPressed = path(for: size).contains($0.location) }
+            .onEnded { _ in isPressed = false }
     }
 
     var body: some View {
         GeometryReader { proxy in
-            PathButton(path: Circle().path(in: proxy.frame(in: .local)), isActive: pressed)
+            PathButton(path: Circle().path(in: proxy.frame(in: .local)), isActive: isPressed)
                 .gesture(touch(for: proxy.size))
         }
     }
@@ -39,8 +39,8 @@ final class ViewController: UIViewController {
     @IBOutlet private var top: UIView!
     @IBOutlet private var bottom: UIView!
 
-    private var pressed = false {
-        didSet { print("pressed", pressed) }
+    private var isPressed = false {
+        didSet { print("isPressed", isPressed) }
     }
 
     private var topHost: UIViewController = UIViewController() {
@@ -56,10 +56,10 @@ final class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         let binding = Binding(
-            get: { self.pressed },
-            set: { self.pressed = $0 })
-        topHost = UIHostingController(rootView: Control(pressed: binding))
-        bottomHost = UIHostingController(rootView: Control(pressed: binding))
+            get: { self.isPressed },
+            set: { self.isPressed = $0 })
+        topHost = UIHostingController(rootView: Control(isPressed: binding))
+        bottomHost = UIHostingController(rootView: Control(isPressed: binding))
     }
 }
 
