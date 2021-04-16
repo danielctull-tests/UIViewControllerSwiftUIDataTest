@@ -52,15 +52,9 @@ final class ViewController: UIViewController {
         didSet { add(topHost, to: top) }
     }
 
-    private var bottomHost: UIViewController = UIViewController() {
-        willSet { remove(bottomHost) }
-        didSet { add(bottomHost, to: bottom) }
-    }
-
     override func viewDidLoad() {
         super.viewDidLoad()
         topHost = UIHostingController(rootView: Control(isPressed: $state.isPressed))
-        bottomHost = UIHostingController(rootView: Control(isPressed: $state.isPressed))
     }
 }
 
