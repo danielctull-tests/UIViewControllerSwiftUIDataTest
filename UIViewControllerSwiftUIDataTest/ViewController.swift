@@ -48,10 +48,18 @@ final class ViewController: UIViewController {
         didSet { add(bottomHost, to: bottom) }
     }
 
+    var cancellables: [AnyCancellable] = []
+
     override func viewDidLoad() {
         super.viewDidLoad()
         topHost = UIHostingController(rootView: Control(isPressed: $state.isPressed))
         bottomHost = UIHostingController(rootView: Control(isPressed: $state.isPressed))
+        state.objectWillChange
+            .sink { [unowned self] in topHost.view.setNeedsDisplay(); print("top setNeedsDisplay") }
+            .store(in: &cancellables)
+        state.objectWillChange
+            .sink { [unowned self] in bottomHost.view.setNeedsDisplay(); print("bottom setNeedsDisplay") }
+            .store(in: &cancellables)
     }
 }
 
