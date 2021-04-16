@@ -38,12 +38,12 @@ final class ViewController: UIViewController {
 
     @ObservedObject private var state = ViewState()
 
-    private var topHost: UIViewController = UIViewController() {
+    private var topHost = UIHostingController(rootView: Control(isPressed: .constant(false))) {
         willSet { remove(topHost) }
         didSet { add(topHost, to: top) }
     }
 
-    private var bottomHost: UIViewController = UIViewController() {
+    private var bottomHost = UIHostingController(rootView: Control(isPressed: .constant(false))) {
         willSet { remove(bottomHost) }
         didSet { add(bottomHost, to: bottom) }
     }
@@ -55,10 +55,10 @@ final class ViewController: UIViewController {
         topHost = UIHostingController(rootView: Control(isPressed: $state.isPressed))
         bottomHost = UIHostingController(rootView: Control(isPressed: $state.isPressed))
         state.objectWillChange
-            .sink { [unowned self] in topHost = UIHostingController(rootView: Control(isPressed: $state.isPressed)); print("top") }
+            .sink { [unowned self] in topHost.rootView = Control(isPressed: $state.isPressed); print("top") }
             .store(in: &cancellables)
         state.objectWillChange
-            .sink { [unowned self] in bottomHost = UIHostingController(rootView: Control(isPressed: $state.isPressed)); print("bottom") }
+            .sink { [unowned self] in bottomHost.rootView = Control(isPressed: $state.isPressed); print("bottom") }
             .store(in: &cancellables)
     }
 }
