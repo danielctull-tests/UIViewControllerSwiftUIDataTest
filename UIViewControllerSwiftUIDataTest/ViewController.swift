@@ -38,28 +38,37 @@ final class ViewController: UIViewController {
 
     @ObservedObject private var state = ViewState()
 
-    private var topHost = UIHostingController(rootView: Control(isPressed: .constant(false))) {
+    private var topHost = UIViewController() {
         willSet { remove(topHost) }
         didSet { add(topHost, to: top) }
     }
 
-    private var bottomHost = UIHostingController(rootView: Control(isPressed: .constant(false))) {
+    private var bottomHost = UIViewController() {
         willSet { remove(bottomHost) }
         didSet { add(bottomHost, to: bottom) }
     }
 
-    var cancellables: [AnyCancellable] = []
-
     override func viewDidLoad() {
         super.viewDidLoad()
-        topHost = UIHostingController(rootView: Control(isPressed: $state.isPressed))
-        bottomHost = UIHostingController(rootView: Control(isPressed: $state.isPressed))
-        state.objectWillChange
-            .sink { [unowned self] in topHost.rootView = Control(isPressed: $state.isPressed); print("top") }
+        topHost = UpdatingHostingController(observing: state) { [unowned self] in Control(isPressed: $state.isPressed) }
+        bottomHost = UpdatingHostingController(observing: state) { [unowned self] in Control(isPressed: $state.isPressed) }
+    }
+}
+
+final class UpdatingHostingController<Value: ObservableObject, Content: View>: UIHostingController<Content> {
+
+    init(observing object: Value, content: @escaping () -> Content) {
+        super.init(rootView: content())
+        object
+            .objectWillChange
+            .sink { [unowned self] _ in rootView = content() }
             .store(in: &cancellables)
-        state.objectWillChange
-            .sink { [unowned self] in bottomHost.rootView = Control(isPressed: $state.isPressed); print("bottom") }
-            .store(in: &cancellables)
+    }
+
+    private var cancellables: [AnyCancellable] = []
+
+    @objc required dynamic init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 }
 
