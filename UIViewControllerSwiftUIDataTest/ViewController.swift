@@ -55,10 +55,10 @@ final class ViewController: UIViewController {
         topHost = UIHostingController(rootView: Control(isPressed: $state.isPressed))
         bottomHost = UIHostingController(rootView: Control(isPressed: $state.isPressed))
         state.objectWillChange
-            .sink { [unowned self] in topHost.view.setNeedsDisplay(); print("top setNeedsDisplay") }
+            .sink { [unowned self] in topHost = UIHostingController(rootView: Control(isPressed: $state.isPressed)); print("top") }
             .store(in: &cancellables)
         state.objectWillChange
-            .sink { [unowned self] in bottomHost.view.setNeedsDisplay(); print("bottom setNeedsDisplay") }
+            .sink { [unowned self] in bottomHost = UIHostingController(rootView: Control(isPressed: $state.isPressed)); print("bottom") }
             .store(in: &cancellables)
     }
 }
